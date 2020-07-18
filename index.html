@@ -120,7 +120,7 @@
         #loader {
             position: fixed;
             top: 50%;
-            right: 45%;
+            right: 47%;
         }
 
         .lds-hourglass {
@@ -175,6 +175,10 @@
                 text-align: center;
                 margin-top: 3%;
             }
+
+            #loader{
+                right: 40%;
+            }
         }
     </style>
 </head>
@@ -201,7 +205,7 @@
             </ul>
             <div class="form-inline my-2 my-lg-0">
                 <input id='search-bar' class="form-control mr-sm-2" type="search"
-                    placeholder="City name, State code, Country" aria-label="Search">
+                    placeholder="City name, State, Country" aria-label="Search">
                 <a class="btn btn-outline-success my-2 my-sm-0 text-white" onclick="searchByCity()">Search</a>
             </div>
         </div>
@@ -219,7 +223,7 @@
                         <h2 id="cur-wthr-temp" style="margin-top: 10%;"></h2>
                         <h3 id="cur-wthr-city"></h3>
                         <h4 id="cur-wthr"></h4>
-                        <h6 id="cur-other-data" class='m-2 mt-3' style="display: flex;border-top: 1px solid;"></h6>
+                        <h6 id="cur-other-data" class='m-2 mt-3 pt-2' style="display: flex;border-top: 1px solid;"></h6>
                     </div>
                 </div>
             </div>
@@ -309,10 +313,10 @@
             getCurrentData(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${new Date().getTime()}&APPID=${appid}`);
         }
 
-        function getCurrentData(url) {
+        async function getCurrentData(url) {
             console.log(url);
             $('#loader').show();
-            $.ajax({
+            await $.ajax({
                 url: url,
                 type: 'GET',
                 success: function (data) {
@@ -332,9 +336,9 @@
             });
         }
         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        function getForcastData(url) {
+        async function getForcastData(url) {
             $('#loader').show();
-            $.ajax({
+            await $.ajax({
                 url: url,
                 type: 'GET',
                 success: function (data) {
@@ -403,10 +407,10 @@
             return strTime;
         }
 
-        function searchByCity() {
+        async function searchByCity() {
             var q = document.getElementById('search-bar').value;
             $('#loader').show();
-            $.ajax({
+            await $.ajax({
                 url: `https://api.openweathermap.org/data/2.5/weather?q=${q}&APPID=${appid}`,
                 type: 'GET',
                 success: function (data) {
