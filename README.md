@@ -4,7 +4,7 @@ Weather Application
 ### Technologies used
 HTML, CSS, Vanila JavaScript
 
-### Framworks used
+### Libraries / Framworks used
 css : BootStrap<br>
 js : Chart.js
 
