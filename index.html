@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>V2 Task</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" rel="stylesheet">
+
+    <style>
+        .middle {
+            display: grid;
+            align-items: center;
+        }
+
+        #search-result-div {
+            transition: all 0.8s linear;
+            margin: 0;
+            padding: 0;
+            height: 0;
+        }
+
+        .display-search {
+            height: auto !important;
+            padding: 3% 0 !important;
+        }
+
+        .hw-10 {
+            height: 10em;
+            width: 10em;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .current-weather-div {
+            background-image: url('images/sky.jpg');
+            padding: 5% 0;
+
+        }
+
+        .navbar {
+            padding: 0.5rem 5rem;
+        }
+
+        .scale-5 {
+            transform: scale(5);
+        }
+
+        #weather-content {
+            padding: 10% 0%;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.2);
+            font-family: monospace;
+        }
+
+        .project-tab {
+            padding: 2% 5%;
+        }
+
+        .project-tab #tabs {
+            background: #007b5e;
+            color: #eee;
+        }
+
+        .project-tab #tabs h6.section-title {
+            color: #eee;
+        }
+
+        .project-tab #tabs .nav-tabs .nav-item.show .nav-link,
+        .nav-tabs .nav-link.active {
+            color: white;
+            background-color: #0062cc;
+            border-color: transparent transparent #f3f3f3;
+            border: 1px solid;
+            border-bottom: 1px solid !important;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .project-tab .nav-link {
+            border: 1px solid transparent;
+            border-top-left-radius: .25rem;
+            border-top-right-radius: .25rem;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none
+        }
+
+        .project-tab .nav-link:hover {
+            color: white;
+            background-color: #0062cc;
+            border: 1px solid white;
+        }
+
+
+        .project-tab thead {
+            background: #f3f3f3;
+            color: #333;
+        }
+
+        .project-tab a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+        }
+
+        #loader {
+            position: fixed;
+            top: 50%;
+            right: 45%;
+        }
+
+        .lds-hourglass {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-hourglass:after {
+            content: " ";
+            display: block;
+            border-radius: 50%;
+            width: 0;
+            height: 0;
+            margin: 8px;
+            box-sizing: border-box;
+            border: 32px solid #fff;
+            border-color: #fff transparent #fff transparent;
+            animation: lds-hourglass 1.2s infinite;
+        }
+
+        @keyframes lds-hourglass {
+            0% {
+                transform: rotate(0);
+                animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+            }
+
+            50% {
+                transform: rotate(900deg);
+                animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+
+            100% {
+                transform: rotate(1800deg);
+            }
+        }
+
+        .wi-30 {
+            flex: 3;
+        }
+        .footer{
+            background: #868686;
+            padding: 2%;
+        }
+        @media screen and (max-width:450px) {
+            .navbar {
+                padding: .5rem 1rem;
+            }
+
+            .mob-dif {
+                text-align: center;
+                margin-top: 3%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Weather App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fa fa-search"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <!-- <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li> -->
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <input id='search-bar' class="form-control mr-sm-2" type="search"
+                    placeholder="City name, State code, Country" aria-label="Search">
+                <a class="btn btn-outline-success my-2 my-sm-0 text-white" onclick="searchByCity()">Search</a>
+            </div>
+        </div>
+    </nav>
+    <div class="coninter-fluid">
+        <div class="row bg-white" id='search-result-div'>
+
+        </div>
+        <div class="row current-weather-div m-0">
+            <div class="col-lg-4 col-md-4 col-sm-10 ml-auto mr-auto">
+                <h4 style="text-align: center;">Current Weather</h4>
+                <div class="card text-white">
+                    <div id="weather-content" class="text-center">
+                        <img id="cur-wthr-img" style="transform: scale(2);">
+                        <h2 id="cur-wthr-temp" style="margin-top: 10%;"></h2>
+                        <h3 id="cur-wthr-city"></h3>
+                        <h4 id="cur-wthr"></h4>
+                        <h6 id="cur-other-data" class='m-2 mt-3' style="display: flex;border-top: 1px solid;"></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4"></div>
+        <h4 class="text-center text-white">Forecast</h4>
+        <section id="tabs" class="project-tab">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-hourly-tab" data-toggle="tab" href="#nav-hourly"
+                                role="tab" aria-controls="nav-hourly" aria-selected="true">Houry</a>
+                            <a class="nav-item nav-link" id="nav-daily-tab" data-toggle="tab" href="#nav-daily"
+                                role="tab" aria-controls="nav-daily" aria-selected="false">Daily</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-hourly" role="tabpanel"
+                            aria-labelledby="nav-hourly-tab">
+                            <div class="row p-3" id="hourly-forecast-row">
+
+                            </div>
+                            <button class="btn btn-primary" style="float: right;"
+                                onclick="downloadExcel(global_hourly_data)"><i class="fa fa-download"></i> Download as
+                                Excel</button>
+                            <div class="row mt-5">
+                                <canvas id="hourlyChart" width="100" height="50"></canvas>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-daily" role="tabpanel" aria-labelledby="nav-daily-tab">
+
+                            <div class="row p-3" id='daily-forecast-row'>
+
+                            </div>
+                            <button class="btn btn-primary" style="float: right;"
+                                onclick="downloadExcel(global_daily_data)"><i class="fa fa-download"></i> Download as
+                                Excel</button>
+                            <div class="row mt-5">
+                                <canvas id="dailyChart" width="100" height="50"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <div id="loader">
+        <div class="lds-hourglass"></div>
+    </div>
+
+
+    <footer class="footer">
+        <div class="container text-center" style="color: snow;">
+            <span>Developed By <a style="color: skyblue;" target="_blank" href="http://ybpage.atwebpages.com/cv/">Md.Younus Bipul</a></span>
+        </div>
+    </footer>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/excel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script>
+        var appid = '89aa4ba136bcdec4edd3e32b7bf04757';
+        var api = ``;
+        var global_hourly_data;
+        var global_daily_data;
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        async function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            api = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutly&dt=${new Date().getTime()}&APPID=${appid}`;
+            await getForcastData(api);
+            getCurrentData(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${new Date().getTime()}&APPID=${appid}`);
+        }
+
+        function getCurrentData(url) {
+            console.log(url);
+            $('#loader').show();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#loader').hide();
+                    console.log(api);
+                    $('#cur-wthr-temp').html(`${Math.floor(data.main.temp - 273.15)}<sup>o</sup>c`);
+                    $('#cur-wthr').html(data.weather[0].main);
+                    $('#cur-wthr-img').attr('src', `http://openweathermap.org/img/w/${data.weather[0].icon}.png`);
+                    $('#cur-wthr-city').html(data.name);
+                    $('#cur-other-data').html(`<span class='wi-30'> Wind <br>${data.wind.speed} meter/sec </span>
+                        <span class='wi-30'> Pressure <br>${data.main.pressure} hPa </span>
+                        <span class='wi-30'> Humidity <br>${data.main.humidity} % </span>`);
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+            });
+        }
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        function getForcastData(url) {
+            $('#loader').show();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#loader').hide();
+                    var daily = data.daily;
+                    global_daily_data = daily;
+                    daily_content = "";
+                    hourly_content = "";
+                    for (var i = 0; i < 6; i++) {
+                        var day = daily[i];
+                        var week_day = new Date(day.dt * 1000).getDay();
+                        daily_content += `<div class="col-lg-2 col-md-2 col-sm-2 mt-2 p-1 ml-auto mr-auto">
+                                        <div class="card text-center text-white">
+                                            <h6>${days[week_day]}</h6>
+                                            <img class="hw-10 ml-auto mr-auto" src='http://openweathermap.org/img/w/${day.weather[0].icon}.png'>
+                                            <h5>${day.weather[0].main}</h5>
+                                            <h6>${Math.floor(day.temp.max - 273.15)}<sup>o</sup>c</h6>
+                                            <h6>${Math.floor(day.temp.min - 273.15)}<sup>o</sup>c</h6>
+                                        </div>
+                                    </div>`;
+
+
+                    }
+
+                    var now = new Date();
+                    var hourly = data.hourly.filter(x => {
+                        var d = new Date(x.dt * 1000);
+                        if (d.getDate() == now.getDate() && d.getHours() >= now.getHours())
+                            return true;
+                        else
+                            return false;
+
+                    })
+                    global_hourly_data = hourly;
+                    for (var i = 0; i < hourly.length; i++) {
+                        var hour = hourly[i];
+                        var day_hour = formatAMPM(new Date(hour.dt * 1000));
+                        hourly_content += `<div class="col-lg-2 col-md-2 col-sm-2 mt-2 p-1">
+                                        <div class="card text-center text-white">
+                                            <h6>${day_hour}</h6>
+                                            <img class="hw-10 ml-auto mr-auto" src='http://openweathermap.org/img/w/${hour.weather[0].icon}.png'>
+                                            <h5>${hour.weather[0].main}</h5>
+                                            <h6>${Math.floor(hour.temp - 273.15)}<sup>o</sup>c</h6>
+                                        </div>
+                                    </div>`;
+                    }
+                    document.getElementById('daily-forecast-row').innerHTML = daily_content;
+                    document.getElementById('hourly-forecast-row').innerHTML = hourly_content;
+                    drawLineChart();
+                    drawBarChart();
+
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+            });
+        }
+        function formatAMPM(date) {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+
+        function searchByCity() {
+            var q = document.getElementById('search-bar').value;
+            $('#loader').show();
+            $.ajax({
+                url: `https://api.openweathermap.org/data/2.5/weather?q=${q}&APPID=${appid}`,
+                type: 'GET',
+                success: function (data) {
+                    $('#loader').hide();
+                    document.getElementById('search-result-div').innerHTML = `<div class="col-lg-6 col-md-6 col-sm-12 ml-auto mr-auto card p-3">
+                <h5 class="text-center">${data.name}</h5>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <div class="text-center">
+                            <h1><img src='http://openweathermap.org/img/w/${data.weather[0].icon}.png'></i></h1>
+                            <h6>${data.weather[0].main}</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 middle">
+                        <div class="text-center">
+                        <h3>${Math.floor(data.main.temp - 273)}<sup>o</sup>C</h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 mob-dif">
+                        <h6>Wind: ${data.wind.speed} meter/sec</h6>
+                        <h6>Pressure: ${data.main.pressure} hPa</h6>
+                        <h6>Humidity: ${data.main.humidity} %</h6>
+                    </div>
+                </div>
+            </div>`;
+                    $('#search-result-div').addClass('display-search')
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+            });
+
+        }
+
+        $("#search-bar").keyup(function (e) {
+            if (e.which === 13) {
+                searchByCity();
+            }
+        });
+        getLocation();
+        $('#loader').hide();
+
+        function downloadExcel(data) {
+            var myExcel = new myExcelXML(JSON.stringify(data));
+            myExcel.downLoad();
+        }
+
+        drawLineChart = function () {
+            var label_days = global_daily_data.map(x => {
+                return days[new Date(x.dt * 1000).getDay()]
+            });
+            label_days = label_days.slice(0, 6);
+            var temp_max = global_daily_data.map(x => {
+                return Math.floor(x.temp.max - 273.15);
+            });
+            temp_max = temp_max.slice(0, 6)
+            var temp_min = global_daily_data.map(x => {
+                return Math.floor(x.temp.min - 273.15);
+            });
+            temp_min = temp_min.slice(0, 6)
+            var config = {
+                type: 'line',
+                data: {
+                    labels: label_days,
+                    datasets: [{
+                        label: 'Highest Temperature',
+                        backgroundColor: 'coral',
+                        borderColor: 'coral',
+                        data: temp_max,
+                        fill: false,
+                    }, {
+                        label: 'Lowest Temperature',
+                        fill: false,
+                        backgroundColor: 'skyblue',
+                        borderColor: 'skyblue',
+                        data: temp_min,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Daily Weather Forecast'
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Month'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Value'
+                            }
+                        }]
+                    }
+                }
+            };
+            var ctx = document.getElementById('dailyChart').getContext('2d');
+
+            window.myLine = new Chart(ctx, config);
+        }
+
+        drawBarChart = function () {
+            var label_hours = global_hourly_data.map(x => {
+                return formatAMPM(new Date(x.dt * 1000))
+            });
+            
+            var temp = global_hourly_data.map(x => {
+                return Math.floor(x.temp - 273.15);
+            });
+            temp.push(0);
+            var config = {
+                type: 'bar',
+                data: {
+                    labels: label_hours,
+                    datasets: [{
+                        label: 'Temperature',
+                        backgroundColor: 'skyblue',
+                        borderColor: 'skyblue',
+                        data: temp,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+					legend: {
+						position: 'top',
+					},
+					title: {
+						display: true,
+						text: 'Hourly Weather Forecast'
+					}
+                }
+            };
+            var ctx = document.getElementById('hourlyChart').getContext('2d');
+
+            window.myLine = new Chart(ctx, config);
+        }
+    </script>
+</body>
+
+</html>
